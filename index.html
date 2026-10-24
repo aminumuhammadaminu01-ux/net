@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NetworkFinder AI — a demonstration prototype that compares sample mobile network quality across Nigerian locations." />
+  <title>NetworkFinder AI — Find the strongest network</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230b1a33'/%3E%3Cpath d='M25 72V44M45 72V28M65 72V50M85 72V36' stroke='%2322d3ee' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar navigation">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M4 18v-5M9.3 18V8.5M14.7 18v-7M20 18V4.5" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <strong>NetworkFinder <span>AI</span></strong>
+          <small>Nigeria network demo</small>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#dashboard" class="nav-link active" data-section="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#search" class="nav-link" data-section="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <span>Location search</span>
+        </a>
+        <a href="#compare" class="nav-link" data-section="compare">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 19v-6M10 19V5M16 19v-9M22 19H2"/></svg>
+          <span>Compare</span>
+        </a>
+        <a href="#speed" class="nav-link" data-section="speed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4.2 17a8.5 8.5 0 1 1 15.6 0"/><path d="m12 13 3.8-3.8"/><circle cx="12" cy="14" r="1.6"/></svg>
+          <span>Speed test</span>
+        </a>
+        <a href="#advisor" class="nav-link" data-section="advisor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3Z"/><path d="M18 15l.9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9L18 15Z"/></svg>
+          <span>AI advisor</span>
+        </a>
+        <a href="#coverage" class="nav-link" data-section="coverage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          <span>Coverage map</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-card">
+        <span class="sidebar-card-title"><i class="live-dot"></i> Demo mode</span>
+        <p>All signal, speed and coverage figures are fictional sample data. No live tower or operator systems are contacted.</p>
+      </div>
+
+      <div class="sidebar-foot">
+        <span>Prototype · v1.0</span>
+        <span>Made for Nigeria 🇳🇬</span>
+      </div>
+    </aside>
+    <div class="sidebar-scrim" id="scrim" aria-hidden="true"></div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="topbar-title">
+          <strong>NetworkFinder AI</strong>
+          <span class="topbar-sep">/</span>
+          <span class="topbar-sub">Network performance explorer</span>
+        </div>
+        <div class="topbar-right">
+          <span class="loc-pill" title="Current demonstration location">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            <span id="currentLocationPill">Gombe</span>
+          </span>
+          <span class="badge-demo"><i class="live-dot"></i> Demo data</span>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- ================= DASHBOARD ================= -->
+        <section id="dashboard" class="section">
+          <div class="hero">
+            <div class="hero-copy">
+              <span class="eyebrow"><i class="live-dot"></i> Nigeria network intelligence · sample dataset</span>
+              <h1>Find the strongest network. <span class="grad">Connect with confidence.</span></h1>
+              <p class="lede">
+                Explore clearly labelled sample signal data for MTN, Airtel, Glo and 9mobile —
+                then see which network may suit your location and your activity best.
+              </p>
+              <div class="hero-actions">
+                <a href="#search" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+                  Check my area
+                </a>
+                <a href="#compare" class="btn btn-ghost">Compare networks</a>
+              </div>
+            </div>
+            <div class="hero-panel" id="heroPanel" aria-live="polite"></div>
+          </div>
+
+          <div class="stat-strip">
+            <div class="stat-tile">
+              <span class="stat-icon cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 18v-4M9 18V9M14 18v-6M19 18V5"/></svg>
+              </span>
+              <div><strong>4</strong><span>Networks compared</span></div>
+            </div>
+            <div class="stat-tile">
+              <span class="stat-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+              </span>
+              <div><strong id="statLocations">8</strong><span>Sample locations</span></div>
+            </div>
+            <div class="stat-tile">
+              <span class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7Z"/><path d="M9 4v14M15 7v13"/></svg>
+              </span>
+              <div><strong id="statAreas">14</strong><span>Coverage areas</span></div>
+            </div>
+            <div class="stat-tile">
+              <span class="stat-icon amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 18v-4M9 18V9M14 18v-6M19 18V5"/></svg>
+              </span>
+              <div><strong>4</strong><span>Scoring metrics</span></div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div>
+              <h2>Network snapshot</h2>
+              <p id="snapshotSub">Sample performance profile for Gombe, Gombe State.</p>
+            </div>
+            <span class="chip chip-soft">Illustrative data</span>
+          </div>
+
+          <div class="network-grid" id="networkGrid"></div>
+
+          <div class="note-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+            <p><strong>About this prototype:</strong> the figures below are invented demonstration values. They do not describe measured performance of any real network.</p>
+          </div>
+        </section>
+
+        <!-- ================= SEARCH ================= -->
+        <section id="search" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Location search</h2>
+              <p>Enter a sample area to load its demonstration profile.</p>
+            </div>
+            <span class="chip chip-soft">Sample geography</span>
+          </div>
+
+          <div class="panel search-panel">
+            <form id="searchForm" class="search-row" autocomplete="off">
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+                <input id="locationInput" type="text" list="locationList" placeholder="Try Gombe, Tumfure or Akko…" aria-label="Search for a sample location" />
+                <datalist id="locationList"></datalist>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+                Search
+              </button>
+            </form>
+
+            <div class="chips-row" id="locationChips" aria-label="Popular sample locations"></div>
+
+            <div id="searchNotice" class="notice" role="status" aria-live="polite" hidden></div>
+            <p class="micro">Only the listed sample areas return results. Unlisted places intentionally show an empty state.</p>
+          </div>
+        </section>
+
+        <!-- ================= COMPARE ================= -->
+        <section id="compare" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Network comparison</h2>
+              <p id="compareSub">All four networks ranked using the same four-metric model.</p>
+            </div>
+            <span class="chip chip-soft" id="compareChip">Gombe</span>
+          </div>
+
+          <div class="panel table-panel">
+            <div class="table-wrap">
+              <table class="compare-table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Network</th>
+                    <th scope="col">Signal</th>
+                    <th scope="col">Download</th>
+                    <th scope="col">Upload</th>
+                    <th scope="col">Ping</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Verdict</th>
+                  </tr>
+                </thead>
+                <tbody id="compareBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="compare-actions">
+            <button type="button" class="btn btn-primary" id="findBestBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+              Find Best Network
+            </button>
+            <span class="micro">Overall score = download 35% · upload 20% · ping 25% · signal 20%.</span>
+          </div>
+
+          <div class="best-panel" id="bestPanel" hidden aria-live="polite"></div>
+        </section>
+
+        <!-- ================= SPEED TEST ================= -->
+        <section id="speed" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Speed test</h2>
+              <p>A short animated demonstration using the sample profile for your location.</p>
+            </div>
+            <span class="chip chip-soft">Simulated</span>
+          </div>
+
+          <div class="panel speed-panel">
+            <div class="speed-left">
+              <div class="gauge" id="speedGauge" style="--val: 0" role="img" aria-label="Simulated download speed gauge">
+                <div class="gauge-inner">
+                  <span id="gaugeValue">0.0</span>
+                  <small>Mbps download</small>
+                </div>
+              </div>
+              <div class="progress" aria-hidden="true"><div class="progress-fill" id="speedProgress"></div></div>
+              <p class="speed-state" id="speedState" role="status" aria-live="polite">Ready to run the demonstration.</p>
+              <button type="button" class="btn btn-primary" id="speedBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l14 8-14 8V4Z"/></svg>
+                Start Speed Test
+              </button>
+            </div>
+
+            <div class="speed-right">
+              <div class="speed-profile">
+                <span class="speed-profile-label">Sample profile</span>
+                <strong id="speedProfile">MTN · Gombe</strong>
+                <span class="micro">Expectations are derived from this profile, with random variation.</span>
+              </div>
+              <div class="result-grid">
+                <div class="result-card">
+                  <span>Download <em>simulated</em></span>
+                  <strong id="resultDown">—</strong>
+                </div>
+                <div class="result-card">
+                  <span>Upload <em>simulated</em></span>
+                  <strong id="resultUp">—</strong>
+                </div>
+                <div class="result-card">
+                  <span>Ping <em>simulated</em></span>
+                  <strong id="resultPing">—</strong>
+                </div>
+              </div>
+              <div class="disclaimer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3 2.8 19h18.4L12 3Z"/><path d="M12 9v4M12 16h.01"/></svg>
+                <p><strong>Demonstration only.</strong> This test does not contact the internet, download files or measure your real connection. Results are generated from fictional sample data.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= ADVISOR ================= -->
+        <section id="advisor" class="section">
+          <div class="section-head">
+            <div>
+              <h2>AI recommendation</h2>
+              <p>Choose what you want to do. A transparent rule-based helper picks the best sample match.</p>
+            </div>
+            <span class="chip chip-soft">Rule-based · no live AI</span>
+          </div>
+
+          <div class="panel advisor-panel">
+            <p class="advisor-prompt">What will you use the connection for?</p>
+            <div class="activity-grid" id="activityGrid">
+              <button type="button" class="activity-btn" data-activity="learning">
+                <span class="activity-icon">🎓</span>
+                <strong>Online learning</strong>
+                <small>Stable classes &amp; downloads</small>
+              </button>
+              <button type="button" class="activity-btn" data-activity="calls">
+                <span class="activity-icon">🎥</span>
+                <strong>Video calls</strong>
+                <small>Clear, steady meetings</small>
+              </button>
+              <button type="button" class="activity-btn" data-activity="gaming">
+                <span class="activity-icon">🎮</span>
+                <strong>Gaming</strong>
+                <small>Low delay, fewer spikes</small>
+              </button>
+              <button type="button" class="activity-btn" data-activity="downloads">
+                <span class="activity-icon">⬇️</span>
+                <strong>Downloading files</strong>
+                <small>Raw speed for big files</small>
+              </button>
+            </div>
+            <div id="advisorResult" aria-live="polite"></div>
+            <p class="micro advisor-foot">Recommendations use fixed weights and the same sample dataset. There is no machine-learning model behind this prototype.</p>
+          </div>
+        </section>
+
+        <!-- ================= COVERAGE ================= -->
+        <section id="coverage" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Coverage map</h2>
+              <p id="coverageSummary">Sample quality by area — not verified real-world coverage.</p>
+            </div>
+            <div class="coverage-filters" id="coverageFilters" role="group" aria-label="Filter coverage by network">
+              <button type="button" class="filter-btn active" data-filter="all">All</button>
+              <button type="button" class="filter-btn" data-filter="mtn">MTN</button>
+              <button type="button" class="filter-btn" data-filter="airtel">Airtel</button>
+              <button type="button" class="filter-btn" data-filter="glo">Glo</button>
+              <button type="button" class="filter-btn" data-filter="etisalat">9mobile</button>
+            </div>
+          </div>
+
+          <div class="panel coverage-panel">
+            <div class="coverage-grid" id="coverageGrid"></div>
+            <div class="coverage-legend">
+              <span><i class="dot strong"></i> Strong sample signal</span>
+              <span><i class="dot moderate"></i> Moderate sample signal</span>
+              <span><i class="dot weak"></i> Weak sample signal</span>
+              <span class="legend-note">Illustrative only — do not use for real coverage decisions.</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div>
+          <strong>NetworkFinder AI</strong>
+          <span>Prototype using demonstration data.</span>
+        </div>
+        <p>All network metrics, rankings and coverage indicators are fictional and created for presentation purposes. Not affiliated with MTN, Airtel, Glo or 9mobile.</p>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
